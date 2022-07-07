@@ -129,7 +129,8 @@ class Viewer {
     this.camera.position.x += size / 2.0;
     this.camera.position.y += size / 5.0;
     this.camera.position.z += size / 2.0;
-    this.camera.lookAt(center);
+    // this.camera.lookAt(center);
+    this.camera.lookAt(new THREE.Vector3(0,0,0));
 
     this.controls.saveState();
 
