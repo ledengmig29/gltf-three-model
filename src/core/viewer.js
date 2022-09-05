@@ -14,7 +14,7 @@ class Viewer {
     this.mouse = new THREE.Vector2();
     this.raycaster = new THREE.Raycaster();
     this.intersected;
-    
+
     this.stats = new Stats();
     this.el.appendChild(this.stats.dom);
     Array.prototype.forEach.call(this.stats.dom.children, (child) => (child.style.display = ''));
@@ -24,13 +24,13 @@ class Viewer {
     this.camera = new THREE.PerspectiveCamera(60, el.clientWidth / el.clientHeight, 0.01, 1000);
     this.scene.add(this.camera);
 
-    this.renderer = new THREE.WebGLRenderer({antialias: true});   // 抗锯齿
+    this.renderer = new THREE.WebGLRenderer({ antialias: true });   // 抗锯齿
     this.renderer.physicallyCorrectLights = true;                 // 使用正确的照明模式
     this.renderer.outputEncoding = THREE.sRGBEncoding;            // 输出 sRGB
     this.renderer.setClearColor(0xcccccc);                        // 设置颜色
     this.renderer.setPixelRatio(window.devicePixelRatio);         // 设置屏幕像素比
     this.renderer.setSize(el.clientWidth, el.clientHeight);       // 调整 canvas 大小
-    
+
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
     this.el.appendChild(this.renderer.domElement);
@@ -58,11 +58,11 @@ class Viewer {
   }
 
   render() {
-    this.renderer.render( this.scene, this.camera );
+    this.renderer.render(this.scene, this.camera);
   }
 
   onWindowResize() {
-    const {clientHeight, clientWidth} = this.el.parentElement;
+    const { clientHeight, clientWidth } = this.el.parentElement;
 
     this.camera.aspect = clientWidth / clientHeight;
     this.camera.updateProjectionMatrix();
@@ -73,7 +73,7 @@ class Viewer {
     // 二维坐标转换为空间坐标
     this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     this.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
-    
+
     // 通过鼠标点的位置和当前相机的矩阵计算出raycaster
     this.raycaster.setFromCamera(this.mouse, this.camera);
 
@@ -126,12 +126,15 @@ class Viewer {
 
     // 根据包围盒设置相机位置
     this.camera.position.copy(center);
-    this.camera.position.x += size / 2.0;
-    this.camera.position.y += size / 5.0;
-    this.camera.position.z += size / 2.0;
+    // this.camera.position.x += size / 1.0;
+    // this.camera.position.y += size / 1.0;
+    // this.camera.position.z += size / 1;
+    this.camera.position.x = center.x;
+    this.camera.position.y = center.y / 2;
+    this.camera.position.z = size;
     // this.camera.lookAt(center);
-    this.camera.lookAt(new THREE.Vector3(0,0,0));
-
+    this.camera.lookAt(new THREE.Vector3(center.x, center.y, center.z));
+    console.log(this.camera.position.x + "," + this.camera.position.y + "," + this.camera.position.z);
     this.controls.saveState();
 
     this.scene.add(object);
@@ -161,20 +164,20 @@ class Viewer {
     this.camera.add(dirLight);
   }
 
-  updateTextureEncoding () {
+  updateTextureEncoding() {
     // 输入 sRGB
     const encoding = THREE.sRGBEncoding;
     traverseMaterials(this.content, (material) => {
       if (material.map) material.map.encoding = encoding;
       if (material.emissiveMap) material.emissiveMap.encoding = encoding;
-      
+
       // 指定的材料需要重新编译
       if (material.map || material.emissiveMap) material.needsUpdate = true;
     });
   }
 }
 
-function traverseMaterials (object, callback) {
+function traverseMaterials(object, callback) {
   object.traverse((node) => {
     if (!node.isMesh) return;
     const materials = Array.isArray(node.material)
