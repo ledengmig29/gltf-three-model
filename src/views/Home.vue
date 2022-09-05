@@ -21,7 +21,7 @@ export default {
   mounted() {
     this.viewerEl = document.getElementById("home");
     this.viewer = new Viewer(this.viewerEl);
-    this.viewer.load('files/gltf/NewProject.gltf');
+    this.viewer.load('files/gltf/NewProject.gltf');//files 文件路径需要自己建立
   }
 };
 </script>
